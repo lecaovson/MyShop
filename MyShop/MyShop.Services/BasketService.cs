@@ -74,7 +74,7 @@ namespace MyShop.Services
                 item = new BasketItem()
                 {
                     BasketId = basket.Id,
-                    ProductId = basket.Id,
+                    ProductId = productId,
                     Quanity = 1
 
                 };
@@ -105,7 +105,7 @@ namespace MyShop.Services
             if (basket != null)
             {
                 var result = (from b in basket.BasketItem
-                              join p in productContext.Collection() on b.ProductId equals p.Id
+                              join p in productContext.Collection() on b  .ProductId equals p.Id
                               select new BasketItemViewModel()
                               {
                                   id = b.Id,
@@ -117,20 +117,23 @@ namespace MyShop.Services
                 return result;
             }
             else
+            {
                 return new List<BasketItemViewModel>();
+            }
+                
 
         }
         public BasketSummaryViewModel GetBasketSummary(HttpContextBase httpContext)
         {
             Basket basket = GetBasket(httpContext, false);
             BasketSummaryViewModel model = new BasketSummaryViewModel(0,0);
-            if(basket!=null)
+            if(basket != null)
             {
                 int? basketCount = (from item in basket.BasketItem
                                     select item.Quanity).Sum();
 
                 decimal? basketTotal = (from item in basket.BasketItem
-                                       join p in productContext.Collection() on item.Id equals p.Id
+                                       join p in productContext.Collection() on item.ProductId equals p.Id
                                        select item.Quanity * p.Price).Sum();
                 model.BasketCount = basketCount ?? 0;
                 model.BasketTotal = basketTotal ?? decimal.Zero;
